@@ -1,113 +1,46 @@
-const hashJs = require("hash.js");
+const Blockchain = require("./model/BlockChain");
+const Transaction = require("./model/Transaction");
+const EC = require("elliptic").ec;
+const ec = new EC("secp256k1");
 
-class Transaction {
-	constructor(fromAdress, toAdress, amount) {
-		this.fromAdress = fromAdress;
-		this.toAdress = toAdress;
-		this.amount = amount;
-	}
-}
+// Your private key goes here
+const myKey = ec.keyFromPrivate(
+	"7c4c45907dec40c91bab3480c39032e90049f1a44f3e18c3e07c23e3273995cf"
+);
 
-class Block {
-	constructor(timestamp, transactions, previousHash = "") {
-		this.previousHash = previousHash;
-		this.transactions = transactions;
-		this.timestamp = timestamp;
-		this.hash = this.calculateHash();
-		this.nonce = 0;
-	}
+// From that we can calculate your public key (which doubles as your wallet address)
+const myWalletAddress = myKey.getPublic("hex");
 
-	calculateHash() {
-		return hashJs
-			.sha256()
-			.update(
-				this.previousHash +
-					this.timestamp +
-					JSON.stringify(this.transactions) +
-					this.nonce
-			)
-			.digest("hex");
-	}
+// Create new instance of Blockchain class
+const hipCoin = new Blockchain();
 
-	mineBlock(difficulty) {
-		while (
-			this.hash.substring(0, difficulty) !==
-			Array(difficulty + 1).join("0")
-		) {
-			this.nonce++;
-			this.hash = this.calculateHash();
-		}
-	}
-}
-class Blockchain {
-	constructor() {
-		this.chain = [this.createGenesisBlock()];
-		this.difficulty = 4;
-		this.pendingTransactions = [];
-		this.miningReward = 100;
-	}
+// Mine first block
+hipCoin.minePendingTransactions(myWalletAddress);
 
-	createGenesisBlock() {
-		return new Block("2020-02-29", [], "0");
-	}
+// Create a transaction & sign it with your key
+const tx1 = new Transaction(myWalletAddress, "address2", 100);
+tx1.signTransaction(myKey);
+hipCoin.addTransaction(tx1);
 
-	getLatestBlock() {
-		return this.chain[this.chain.length - 1];
-	}
+// Mine block
+hipCoin.minePendingTransactions(myWalletAddress);
 
-	minePendingTransactions(miningRewardAdress) {
-		let block = new Block(Date.now(), this.pendingTransactions);
-		block.mineBlock(this.difficulty);
-		console.log("block successfully mined");
-		this.chain.push(block);
-		this.pendingTransactions = [
-			new Transaction(null, miningRewardAdress, this.miningReward),
-		];
-	}
+// Create second transaction
+const tx2 = new Transaction(myWalletAddress, "address1", 50);
+tx2.signTransaction(myKey);
+hipCoin.addTransaction(tx2);
 
-	createTransaction(transaction) {
-		this.pendingTransactions.push(transaction);
-	}
+// Mine block
+hipCoin.minePendingTransactions(myWalletAddress);
 
-	getBalanceOfAdress(address) {
-		let balance = 0;
-		for (const block of this.chain) {
-			for (const trans of block.transactions) {
-				if (trans.fromAdress === address) {
-					balance -= trans.amount;
-				}
-				if (trans.toAdress === address) {
-					balance += trans.amount;
-				}
-			}
-		}
-		return balance;
-	}
+console.log();
+console.log(
+	`Balance of xavier is ${hipCoin.getBalanceOfAddress(myWalletAddress)}`
+);
 
-	isChainValid() {
-		for (let i = 1; i < this.chain.length; i++) {
-			const currentBlock = this.chain[i];
-			const previousBlock = this.chain[i - 1];
-			if (currentBlock.hash != currentBlock.calculateHash()) {
-				return false;
-			}
-			if (currentBlock.previousHash != previousBlock.hash) {
-				return false;
-			}
-		}
-		return true;
-	}
-}
+// Uncomment this line if you want to test tampering with the chain
+// hipCoin.chain[1].transactions[0].amount = 10;
 
-//the rest of the code is for demonstration and testing purposes
-let hipcoin = new Blockchain();
-hipcoin.createTransaction(new Transaction("hipmaze", "sterben", 100));
-hipcoin.createTransaction(new Transaction("sterben", "hipmaze", 50));
-
-console.log("\nStart the mining ...");
-console.log(hipcoin.pendingTransactions);
-hipcoin.minePendingTransactions("winner");
-console.log("balance of hipmaze : " + hipcoin.getBalanceOfAdress("hipmaze"));
-console.log("balance of sterben : " + hipcoin.getBalanceOfAdress("sterben"));
-console.log("balance of winner  : " + hipcoin.getBalanceOfAdress("winner"));
-console.log("\nis Blockchain valid?" + hipcoin.isChainValid());
+// Check if the chain is valid
+console.log();
+console.log("Blockchain valid?", hipCoin.isChainValid() ? "Yes" : "No");
