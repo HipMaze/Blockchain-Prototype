@@ -9,8 +9,7 @@ class Transaction {
 }
 
 class Block {
-	constructor(index, timestamp, transactions, previousHash = "") {
-		this.index = index;
+	constructor(timestamp, transactions, previousHash = "") {
 		this.previousHash = previousHash;
 		this.transactions = transactions;
 		this.timestamp = timestamp;
@@ -49,7 +48,7 @@ class Blockchain {
 	}
 
 	createGenesisBlock() {
-		return new Block(0, "2020-02-29", [], "0");
+		return new Block("2020-02-29", [], "0");
 	}
 
 	getLatestBlock() {
@@ -60,6 +59,7 @@ class Blockchain {
 		let block = new Block(Date.now(), this.pendingTransactions);
 		block.mineBlock(this.difficulty);
 		console.log("block successfully mined");
+		this.chain.push(block);
 		this.pendingTransactions = [
 			new Transaction(null, miningRewardAdress, this.miningReward),
 		];
@@ -102,10 +102,10 @@ class Blockchain {
 //the rest of the code is for demonstration and testing purposes
 let hipcoin = new Blockchain();
 hipcoin.createTransaction(new Transaction("hipmaze", "sterben", 100));
-hipcoin.createTransaction(new Transaction("sterben", "hipmaze", 100));
+hipcoin.createTransaction(new Transaction("sterben", "hipmaze", 50));
 
 console.log("\nStart the mining ...");
-
+console.log(hipcoin.pendingTransactions);
 hipcoin.minePendingTransactions("winner");
 console.log("balance of hipmaze : " + hipcoin.getBalanceOfAdress("hipmaze"));
 console.log("balance of sterben : " + hipcoin.getBalanceOfAdress("sterben"));
