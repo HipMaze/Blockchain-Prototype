@@ -1,0 +1,23 @@
+{
+  "name": "blockchain-prototype",
+  "version": "1.0.0",
+  "description": "Simple blockchain prototype to understand the theory behind it",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HipMaze/Blockchain-Prototype.git"
+  },
+  "author": "HipMaze",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HipMaze/Blockchain-Prototype/issues"
+  },
+  "homepage": "https://github.com/HipMaze/Blockchain-Prototype#readme",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "hash.js": "^1.1.7"
+  }
+}
