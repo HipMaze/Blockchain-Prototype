@@ -2,7 +2,7 @@
 
 ### Description
 
-This project serves multiple purposes. For one it was used primarly as a lab for my talks regarding blockchain and their use in cryptocurrencies (old 2020 talks). Secondly the more recent commits in this repository take a methodical and pedagogical approach to the subject to go from a crude mvp to a decently engineered blockchain. ()
+This project serves multiple purposes. For one it was used primarly as a lab for my talks regarding blockchain and their use in cryptocurrencies (old 2020 talks). Secondly the more recent commits in this repository take a methodical and pedagogical approach to the subject to go from a crude mvp to a decently engineered blockchain. 
 
 ### Roadmap
 
